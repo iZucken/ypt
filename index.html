@@ -4,23 +4,101 @@
     <meta charset="UTF-8">
     <title>present day</title>
     <style>
+        @font-face {
+            font-family: 'DSDIGI';
+            src: url('./DSDIGI/DSDIGI.eot');
+            src: local('DSDIGI'), url('./DSDIGI/DSDIGI.woff') format('woff'), url('./DSDIGI/DSDIGI.ttf') format('truetype');
+        }
+
+        body {
+            background: black;
+        }
+
+        #clock-block {
+            font-family: 'DSDIGI';
+            color: greenyellow;
+            text-shadow: 0 0 2px greenyellow;
+        }
+
+        .gift-box {
+            background: url("./gift-box.png");
+            background-size: contain;
+            width: 128px;
+            height: 110px;
+            position: absolute;
+        }
+
+        .gift-cap {
+            background: url("./gift-cap.png");
+            background-size: contain;
+            width: 128px;
+            height: 110px;
+            position: absolute;
+        }
+
         .menace {
             background: url("./menace.png");
-            background-size: cover;
+            background-size: contain;
             width: 128px;
             height: 128px;
+            position: absolute;
         }
     </style>
 </head>
 <body>
-<div class="menace"></div>
+<div class="menace" id="start"></div>
+<div id="clock-block"></div>
+<div id="present" style="top: 500px; position: absolute">
+    <div class="gift-cap"></div>
+    <div class="gift-box"></div>
+</div>
 <script>
-    let clock_cut = new Audio('./clock-cut.mp3');
-    clock_cut.play();
-    let clock = new Audio('./clock.mp3');
-    clock.play();
-    let lyrics = new Audio('./lyrics.mp3');
-    lyrics.play();
+    let present = document.getElementById("present");
+    let start = document.getElementById("start");
+    let clockBlock = document.getElementById("clock-block");
+    let granted = false;
+    let opened = false;
+    let sounds = {
+        clock: new Audio('./clock.mp3'),
+        clockCut: new Audio('./clock-cut.mp3'),
+        pop: new Audio('./pop.mp3'),
+        lyrics: new Audio('./lyrics.mp3'),
+    }
+    setInterval(() => {
+        clock();
+    }, 1000);
+    clock = () => {
+        if (granted) {
+            if (opened) {
+                sounds.clock.pause();
+                sounds.clock.currentTime = 0;
+                sounds.clock.play();
+            } else {
+                sounds.clockCut.play();
+            }
+        }
+        let now = new Date();
+        let h = ("" + now.getHours()).padStart(2, "0");
+        let m = ("" + now.getMinutes()).padStart(2, "0");
+        let s = ("" + now.getSeconds()).padStart(2, "0");
+        let nowString = `${h}:${m}:${s}`;
+        document.title = nowString;
+        clockBlock.innerText = nowString;
+    }
+    start.onclick = () => {
+        granted = true;
+    }
+    present.onclick = () => {
+        if (opened) {
+            return
+        }
+        opened = !opened;
+        sounds.pop.play();
+        setTimeout(afterPresent, 1000);
+    }
+    afterPresent = () => {
+        sounds.lyrics.play();
+    }
 </script>
 </body>
 </html>
