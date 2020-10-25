@@ -10,30 +10,75 @@
             src: local('DSDIGI'), url('./DSDIGI/DSDIGI.woff') format('woff'), url('./DSDIGI/DSDIGI.ttf') format('truetype');
         }
 
-        body {
-            background: black;
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        #start {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            background: white;
+            text-align: center;
+            line-height: 60rem;
+            font-size: 10rem;
+            user-select: none;
+        }
+
+        #present {
+
         }
 
         #clock-block {
             font-family: 'DSDIGI';
+            font-size: 32px;
             color: greenyellow;
             text-shadow: 0 0 2px greenyellow;
+            position: absolute;
+            width: 128px;
+            height: 50px;
+            line-height: 45px;
+            text-align: center;
+            user-select: none;
+            background: black;
+            border: 2px solid silver;
+            margin: 64px 64px;
         }
 
-        .gift-box {
+        #gift-box {
             background: url("./gift-box.png");
             background-size: contain;
-            width: 128px;
-            height: 110px;
+            width: 256px;
+            height: 220px;
             position: absolute;
+            transition: 0.5s linear;
         }
 
-        .gift-cap {
+        #gift-cap {
             background: url("./gift-cap.png");
             background-size: contain;
-            width: 128px;
-            height: 110px;
+            width: 256px;
+            height: 220px;
             position: absolute;
+            transition: 0.5s linear;
+        }
+
+        #present.open > #gift-box {
+            transform: translate3d(-10px,512px,0) rotate3d(0,0,1,-40deg);
+            opacity: 0;
+        }
+
+        #present.open > #gift-cap {
+            transform: translate3d(50px,-1024px,0) rotate3d(0,0,1,600deg);
+            opacity: 0;
+        }
+
+        #menace-layer {
+            transition: 0.5s;
+            position: absolute;
+            opacity: 1
         }
 
         .menace {
@@ -42,20 +87,73 @@
             width: 128px;
             height: 128px;
             position: absolute;
+            animation: menaceJitter 0.125s;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes menaceJitter {
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+            25% {
+                transform: translate3d(5px, 0, 0);
+            }
+            50% {
+                transform: translate3d(0, 0, 0);
+            }
+            75% {
+                transform: translate3d(-5px, 0, 0);
+            }
+            100% {
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes menaceJitter {
+            0% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            25% {
+                transform: translate3d(5px, 0, 0) scale(0.9);
+            }
+            50% {
+                transform: translate3d(0, 0, 0) scale(0.8);
+            }
+            75% {
+                transform: translate3d(-5px, 0, 0) scale(0.9);
+            }
+            100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
         }
     </style>
 </head>
 <body>
-<div class="menace" id="start"></div>
-<div id="clock-block"></div>
-<div id="present" style="top: 500px; position: absolute">
-    <div class="gift-cap"></div>
-    <div class="gift-box"></div>
+<div id="present" style="top: calc(50% - 100px); left: calc(50% - 128px); position: absolute">
+    <div id="clock-block"></div>
+    <div id="gift-cap"></div>
+    <div id="gift-box"></div>
+    <div id="menace-layer">
+        <div style="position: absolute; left: -150px; top: -100px;">
+            <div class="menace" style="animation-delay: -0.33s;top: -125px;left: 99px;"></div>
+            <div class="menace" style="animation-delay: -0.11s;top: -25px;left: 33px;"></div>
+            <div class="menace" style="animation-delay: -0.77s;top: 25px;left: 66px;"></div>
+            <div class="menace" style="animation-delay: -0.55s;top: 125px;left: -33px;"></div>
+        </div>
+        <div style="position: absolute; left: 200px; top: 150px;">
+            <div class="menace" style="animation-delay: -0.66s;top: -125px;left: 99px;"></div>
+            <div class="menace" style="animation-delay: -0.22s;top: -25px;left: 33px;"></div>
+            <div class="menace" style="animation-delay: -0.44s;top: 25px;left: 66px;"></div>
+            <div class="menace" style="animation-delay: -0.88s;top: 125px;left: -33px;"></div>
+        </div>
+    </div>
 </div>
+<div id="start">▶</div>
 <script>
-    let present = document.getElementById("present");
     let start = document.getElementById("start");
+    let present = document.getElementById("present");
     let clockBlock = document.getElementById("clock-block");
+    let menaceLayer = document.getElementById("menace-layer");
     let granted = false;
     let opened = false;
     let sounds = {
@@ -85,15 +183,19 @@
         document.title = nowString;
         clockBlock.innerText = nowString;
     }
-    start.onclick = () => {
+    startFunction = () => {
+        start.remove();
         granted = true;
     }
+    start.onclick = startFunction
     present.onclick = () => {
         if (opened) {
             return
         }
         opened = !opened;
         sounds.pop.play();
+        menaceLayer.style.opacity = "0";
+        present.classList.add("open");
         setTimeout(afterPresent, 1000);
     }
     afterPresent = () => {
