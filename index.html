@@ -166,21 +166,21 @@
         clock();
     }, 1000);
     clock = () => {
-        if (granted) {
-            if (opened) {
-                sounds.clock.pause();
-                sounds.clock.currentTime = 0;
-                sounds.clock.play();
-            } else {
-                sounds.clockCut.play();
-            }
-        }
         let now = new Date();
         let h = ("" + now.getHours()).padStart(2, "0");
         let m = ("" + now.getMinutes()).padStart(2, "0");
         let s = ("" + now.getSeconds()).padStart(2, "0");
         let nowString = `${h}:${m}:${s}`;
-        document.title = nowString;
+        if (granted) {
+            if (opened) {
+                sounds.clock.pause();
+                sounds.clock.currentTime = 0;
+                sounds.clock.play();
+                document.title = nowString;
+            } else {
+                sounds.clockCut.play();
+            }
+        }
         clockBlock.innerText = nowString;
     }
     startFunction = () => {
